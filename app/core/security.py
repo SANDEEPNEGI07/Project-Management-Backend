@@ -30,12 +30,18 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None) -> s
     return jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
 
 
-async def get_current_user(request: Request, db: AsyncSession = Depends(get_db)) -> UserModel:
+async def get_current_user(
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+) -> UserModel:
     token = request.cookies.get("access_token")
     if not token:
         raise HTTPException(status_code=401, detail="Not authenticated")
     try:
-        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+        payload = jwt.decode(
+            token, settings.SECRET_KEY,
+            algorithms=[settings.ALGORITHM],
+        )
         sub: str = payload.get("sub")
         if sub is None:
             raise HTTPException(status_code=401, detail="Invalid token")

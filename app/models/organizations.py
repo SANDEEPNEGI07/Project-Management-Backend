@@ -12,8 +12,19 @@ class OrganizationModel(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(Text, nullable=False)
     description = Column(Text, nullable=True)
-    status = Column(Enum(OrganizationStatus), nullable=False, default=OrganizationStatus.ACTIVE)
+    status = Column(
+        Enum(OrganizationStatus),
+        nullable=False,
+        default=OrganizationStatus.ACTIVE,
+    )
     createdAt = Column(DateTime, default=datetime.utcnow)
-    updatedAt = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    updatedAt = Column(
+        DateTime, default=datetime.utcnow,
+        onupdate=datetime.utcnow,
+    )
 
-    projects = relationship("ProjectModel", back_populates="organization", passive_deletes=False)
+    projects = relationship(
+        "ProjectModel",
+        back_populates="organization",
+        passive_deletes=False,
+    )

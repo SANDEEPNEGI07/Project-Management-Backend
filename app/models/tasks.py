@@ -13,8 +13,16 @@ class TaskModel(Base):
     title = Column(Text, nullable=False)
     description = Column(Text, nullable=True)
     status = Column(Enum(TaskStatus), nullable=False, default=TaskStatus.PENDING)
-    priority = Column(Enum(TaskPriority), nullable=False, default=TaskPriority.MEDIUM)
-    projectId = Column(Integer, ForeignKey("projects.id", ondelete="CASCADE"), nullable=False)
+    priority = Column(
+        Enum(TaskPriority),
+        nullable=False,
+        default=TaskPriority.MEDIUM,
+    )
+    projectId = Column(
+        Integer,
+        ForeignKey("projects.id", ondelete="CASCADE"),
+        nullable=False,
+    )
     assignedTo = Column(Integer, nullable=True)
     assignedAt = Column(DateTime, nullable=True)
     createdAt = Column(DateTime, default=datetime.utcnow)

@@ -27,7 +27,9 @@ async def get_projects(db: AsyncSession) -> list[ProjectModel]:
     return list(result.scalars().all())
 
 
-async def update_project(project_id: int, data: ProjectUpdate, db: AsyncSession) -> ProjectModel:
+async def update_project(
+    project_id: int, data: ProjectUpdate, db: AsyncSession,
+) -> ProjectModel:
     project = await get_project(project_id, db)
     for field, value in data.model_dump(exclude_unset=True).items():
         setattr(project, field, value)

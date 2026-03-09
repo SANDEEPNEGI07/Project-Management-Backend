@@ -13,4 +13,9 @@ class UserModel(Base):
     createdAt = Column(DateTime, default=datetime.utcnow)
     updatedAt = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
-    profile = relationship("UserProfileModel", back_populates="user", uselist=False, cascade="all, delete-orphan")
+    profile = relationship(
+        "UserProfileModel",
+        back_populates="user",
+        uselist=False,
+        cascade="all, delete-orphan",
+    )

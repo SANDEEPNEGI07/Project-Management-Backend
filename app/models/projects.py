@@ -12,10 +12,25 @@ class ProjectModel(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(Text, nullable=False)
     description = Column(Text, nullable=True)
-    status = Column(Enum(ProjectStatus), nullable=False, default=ProjectStatus.PLANNED)
-    organizationId = Column(Integer, ForeignKey("organizations.id", ondelete="RESTRICT"), nullable=False)
+    status = Column(
+        Enum(ProjectStatus),
+        nullable=False,
+        default=ProjectStatus.PLANNED,
+    )
+    organizationId = Column(
+        Integer,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+    )
     createdAt = Column(DateTime, default=datetime.utcnow)
-    updatedAt = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    updatedAt = Column(
+        DateTime, default=datetime.utcnow,
+        onupdate=datetime.utcnow,
+    )
 
     organization = relationship("OrganizationModel", back_populates="projects")
-    tasks = relationship("TaskModel", back_populates="project", cascade="all, delete-orphan")
+    tasks = relationship(
+        "TaskModel",
+        back_populates="project",
+        cascade="all, delete-orphan"
+    )

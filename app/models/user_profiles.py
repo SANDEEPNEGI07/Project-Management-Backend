@@ -8,7 +8,12 @@ class UserProfileModel(Base):
     __tablename__ = "user_profiles"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    userId = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, unique=True)
+    userId = Column(
+        Integer,
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False,
+        unique=True,
+    )
     username = Column(Text, nullable=False)
     firstName = Column(Text, nullable=True)
     lastName = Column(Text, nullable=True)
