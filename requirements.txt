@@ -1,0 +1,12 @@
+fastapi[standard]
+uvicorn
+pytest
+flake8
+sqlalchemy
+psycopg2-binary
+asyncpg
+alembic
+pydantic[email]
+python-jose[cryptography]
+passlib[bcrypt]
+bcrypt==4.0.1

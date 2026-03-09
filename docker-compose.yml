@@ -1,0 +1,35 @@
+services:
+  # Project-Management:
+  #   build: 
+  #     context: .
+  #     args:
+  #       - DEV=
+  #   ports:
+  #     - 3000:3000
+  #   volumes:
+  #     - ./app:/app
+
+  dev-db:
+    image: postgres:13-alpine
+    restart: always
+    env_file:
+      - ./.env
+    
+    ports:
+      - "5433:5432"
+
+    volumes:
+      - dev-db-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=dev-db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+
+volumes:
+  dev-db-data:
