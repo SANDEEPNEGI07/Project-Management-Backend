@@ -1,0 +1,47 @@
+from fastapi import APIRouter, Depends
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.db.session import get_db
+from app.core.security import get_current_user
+from app.models.users import UserModel
+from app.schemas.user_profiles import UserProfileCreate, UserProfileUpdate, UserProfileResponse
+from app.services.user_profile_service import (
+    create_user_profile,
+    get_user_profile,
+    get_user_profile_by_user_id,
+    get_user_profiles,
+    update_user_profile,
+    delete_user_profile,
+)
+
+router = APIRouter(tags=["User Profiles"])
+
+
+@router.get("/", response_model=list[UserProfileResponse])
+async def list_user_profiles(db: AsyncSession = Depends(get_db), current_user: UserModel = Depends(get_current_user)):
+    return await get_user_profiles(db)
+
+
+@router.post("/", response_model=UserProfileResponse, status_code=201)
+async def add_user_profile(data: UserProfileCreate, db: AsyncSession = Depends(get_db), current_user: UserModel = Depends(get_current_user)):
+    return await create_user_profile(data, db)
+
+
+@router.get("/me", response_model=UserProfileResponse)
+async def read_my_profile(db: AsyncSession = Depends(get_db), current_user: UserModel = Depends(get_current_user)):
+    return await get_user_profile_by_user_id(current_user.id, db)
+
+
+@router.get("/{profile_id}", response_model=UserProfileResponse)
+async def read_user_profile(profile_id: int, db: AsyncSession = Depends(get_db), current_user: UserModel = Depends(get_current_user)):
+    return await get_user_profile(profile_id, db)
+
+
+@router.patch("/{profile_id}", response_model=UserProfileResponse)
+async def edit_user_profile(profile_id: int, data: UserProfileUpdate, db: AsyncSession = Depends(get_db), current_user: UserModel = Depends(get_current_user)):
+    return await update_user_profile(profile_id, data, db)
+
+
+@router.delete("/{profile_id}", status_code=204)
+async def remove_user_profile(profile_id: int, db: AsyncSession = Depends(get_db), current_user: UserModel = Depends(get_current_user)):
+    await delete_user_profile(profile_id, db)
