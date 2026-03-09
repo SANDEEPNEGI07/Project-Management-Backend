@@ -35,7 +35,7 @@ async def add_user_profile(
     db: AsyncSession = Depends(get_db),
     current_user: UserModel = Depends(get_current_user),
 ):
-    return await create_user_profile(data, db)
+    return await create_user_profile(data, current_user.id, db)
 
 
 @router.get("/me", response_model=UserProfileResponse)
@@ -44,6 +44,25 @@ async def read_my_profile(
     current_user: UserModel = Depends(get_current_user),
 ):
     return await get_user_profile_by_user_id(current_user.id, db)
+
+
+@router.patch("/me", response_model=UserProfileResponse)
+async def edit_my_profile(
+    data: UserProfileUpdate,
+    db: AsyncSession = Depends(get_db),
+    current_user: UserModel = Depends(get_current_user),
+):
+    profile = await get_user_profile_by_user_id(current_user.id, db)
+    return await update_user_profile(profile.id, data, current_user.id, db)
+
+
+@router.delete("/me", status_code=204)
+async def remove_my_profile(
+    db: AsyncSession = Depends(get_db),
+    current_user: UserModel = Depends(get_current_user),
+):
+    profile = await get_user_profile_by_user_id(current_user.id, db)
+    await delete_user_profile(profile.id, current_user.id, db)
 
 
 @router.get("/{profile_id}", response_model=UserProfileResponse)
@@ -62,7 +81,7 @@ async def edit_user_profile(
     db: AsyncSession = Depends(get_db),
     current_user: UserModel = Depends(get_current_user),
 ):
-    return await update_user_profile(profile_id, data, db)
+    return await update_user_profile(profile_id, data, current_user.id, db)
 
 
 @router.delete("/{profile_id}", status_code=204)
@@ -71,4 +90,4 @@ async def remove_user_profile(
     db: AsyncSession = Depends(get_db),
     current_user: UserModel = Depends(get_current_user),
 ):
-    await delete_user_profile(profile_id, db)
+    await delete_user_profile(profile_id, current_user.id, db)

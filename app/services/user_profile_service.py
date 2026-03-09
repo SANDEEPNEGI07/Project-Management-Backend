@@ -7,9 +7,18 @@ from app.schemas.user_profiles import UserProfileCreate, UserProfileUpdate
 
 
 async def create_user_profile(
-    data: UserProfileCreate, db: AsyncSession,
+    data: UserProfileCreate, user_id: int, db: AsyncSession,
 ) -> UserProfileModel:
-    profile = UserProfileModel(**data.model_dump())
+    existing = await db.execute(
+        select(UserProfileModel)
+        .where(UserProfileModel.userId == user_id)
+    )
+    if existing.scalar_one_or_none():
+        raise HTTPException(
+            status_code=409,
+            detail="A profile already exists for this user",
+        )
+    profile = UserProfileModel(**data.model_dump(), userId=user_id)
     db.add(profile)
     await db.commit()
     await db.refresh(profile)
@@ -49,9 +58,11 @@ async def get_user_profiles(db: AsyncSession) -> list[UserProfileModel]:
 
 async def update_user_profile(
     profile_id: int, data: UserProfileUpdate,
-    db: AsyncSession,
+    user_id: int, db: AsyncSession,
 ) -> UserProfileModel:
     profile = await get_user_profile(profile_id, db)
+    if profile.userId != user_id:
+        raise HTTPException(status_code=403, detail="Not authorized to update this profile")
     for field, value in data.model_dump(exclude_unset=True).items():
         setattr(profile, field, value)
     await db.commit()
@@ -59,7 +70,11 @@ async def update_user_profile(
     return profile
 
 
-async def delete_user_profile(profile_id: int, db: AsyncSession) -> None:
+async def delete_user_profile(
+    profile_id: int, user_id: int, db: AsyncSession,
+) -> None:
     profile = await get_user_profile(profile_id, db)
+    if profile.userId != user_id:
+        raise HTTPException(status_code=403, detail="Not authorized to delete this profile")
     await db.delete(profile)
     await db.commit()

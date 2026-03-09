@@ -13,7 +13,7 @@ class UserProfileBase(BaseModel):
 
 
 class UserProfileCreate(UserProfileBase):
-    userId: int
+    pass
 
 
 class UserProfileUpdate(BaseModel):

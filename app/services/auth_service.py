@@ -10,6 +10,8 @@ async def register_user(email: str, password: str, db: AsyncSession) -> UserMode
     result = await db.execute(select(UserModel).where(UserModel.email == email))
     existing = result.scalar_one_or_none()
     if existing:
+        if verify_password(password, existing.password):
+            return existing
         raise HTTPException(status_code=409, detail="Email already registered")
 
     user = UserModel(email=email, password=hash_password(password))

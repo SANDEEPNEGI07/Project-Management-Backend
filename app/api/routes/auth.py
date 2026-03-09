@@ -1,8 +1,10 @@
 from fastapi import APIRouter, Depends, Response
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
 
 from app.db.session import get_db
 from app.core.config import settings
+from app.models.users import UserModel
 from app.schemas.users import UserCreate, UserResponse
 from app.services.auth_service import (
     register_user,
@@ -13,9 +15,16 @@ from app.services.auth_service import (
 router = APIRouter(tags=["Auth"])
 
 
-@router.post("/register", response_model=UserResponse, status_code=201)
-async def register(user_data: UserCreate, db: AsyncSession = Depends(get_db)):
+@router.post("/register", response_model=UserResponse)
+async def register(user_data: UserCreate, response: Response, db: AsyncSession = Depends(get_db)):
+    existing = await db.execute(
+        select(UserModel).where(UserModel.email == user_data.email)
+    )
+    already_exists = existing.scalar_one_or_none() is not None
+
     user = await register_user(user_data.email, user_data.password, db)
+
+    response.status_code = 200 if already_exists else 201
     return user
 
 
@@ -31,7 +40,7 @@ async def login(
         key="access_token",
         value=token,
         httponly=True,
-        secure=False,
+        secure=settings.COOKIE_SECURE,
         samesite="lax",
         max_age=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
     )
