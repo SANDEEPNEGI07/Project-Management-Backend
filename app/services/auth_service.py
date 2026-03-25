@@ -7,6 +7,7 @@ from app.core.security import hash_password, verify_password, create_access_toke
 
 
 async def register_user(email: str, password: str, db: AsyncSession) -> UserModel:
+    """Register a user or return the existing user."""
     result = await db.execute(select(UserModel).where(UserModel.email == email))
     existing = result.scalar_one_or_none()
     if existing:
@@ -22,6 +23,7 @@ async def register_user(email: str, password: str, db: AsyncSession) -> UserMode
 
 
 async def authenticate_user(email: str, password: str, db: AsyncSession) -> UserModel:
+    """Validate credentials and return the matching user."""
     result = await db.execute(select(UserModel).where(UserModel.email == email))
     user = result.scalar_one_or_none()
     if not user or not verify_password(password, user.password):
@@ -30,4 +32,5 @@ async def authenticate_user(email: str, password: str, db: AsyncSession) -> User
 
 
 def generate_token_for_user(user: UserModel) -> str:
+    """Generate a JWT access token for the given user."""
     return create_access_token(data={"sub": str(user.id)})

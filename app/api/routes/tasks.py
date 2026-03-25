@@ -21,6 +21,7 @@ async def list_tasks(
     db: AsyncSession = Depends(get_db),
     current_user: UserModel = Depends(get_current_user),
 ):
+    """Return all tasks."""
     return await get_tasks(db)
 
 
@@ -30,6 +31,7 @@ async def add_task(
     db: AsyncSession = Depends(get_db),
     current_user: UserModel = Depends(get_current_user),
 ):
+    """Create a new task."""
     return await create_task(data, db)
 
 
@@ -39,6 +41,7 @@ async def read_task(
     db: AsyncSession = Depends(get_db),
     current_user: UserModel = Depends(get_current_user),
 ):
+    """Fetch a task by ID."""
     return await get_task(task_id, db)
 
 
@@ -49,6 +52,7 @@ async def edit_task(
     db: AsyncSession = Depends(get_db),
     current_user: UserModel = Depends(get_current_user),
 ):
+    """Update a task by ID."""
     return await update_task(task_id, data, db)
 
 
@@ -58,4 +62,5 @@ async def remove_task(
     db: AsyncSession = Depends(get_db),
     current_user: UserModel = Depends(get_current_user),
 ):
+    """Delete a task by ID."""
     await delete_task(task_id, db)

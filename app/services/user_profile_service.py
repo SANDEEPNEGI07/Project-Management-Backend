@@ -9,6 +9,7 @@ from app.schemas.user_profiles import UserProfileCreate, UserProfileUpdate
 async def create_user_profile(
     data: UserProfileCreate, user_id: int, db: AsyncSession,
 ) -> UserProfileModel:
+    """Create a profile for a user if one does not already exist."""
     existing = await db.execute(
         select(UserProfileModel)
         .where(UserProfileModel.userId == user_id)
@@ -28,6 +29,7 @@ async def create_user_profile(
 async def get_user_profile(
     profile_id: int, db: AsyncSession,
 ) -> UserProfileModel:
+    """Return one user profile by ID or raise 404 if missing."""
     result = await db.execute(
         select(UserProfileModel)
         .where(UserProfileModel.id == profile_id)
@@ -41,6 +43,7 @@ async def get_user_profile(
 async def get_user_profile_by_user_id(
     user_id: int, db: AsyncSession,
 ) -> UserProfileModel:
+    """Return a user profile by owning user ID or raise 404 if missing."""
     result = await db.execute(
         select(UserProfileModel)
         .where(UserProfileModel.userId == user_id)
@@ -52,6 +55,7 @@ async def get_user_profile_by_user_id(
 
 
 async def get_user_profiles(db: AsyncSession) -> list[UserProfileModel]:
+    """Return all user profiles."""
     result = await db.execute(select(UserProfileModel))
     return list(result.scalars().all())
 
@@ -60,9 +64,13 @@ async def update_user_profile(
     profile_id: int, data: UserProfileUpdate,
     user_id: int, db: AsyncSession,
 ) -> UserProfileModel:
+    """Update a user profile when the caller owns that profile."""
     profile = await get_user_profile(profile_id, db)
     if profile.userId != user_id:
-        raise HTTPException(status_code=403, detail="Not authorized to update this profile")
+        raise HTTPException(
+            status_code=403,
+            detail="Not authorized to update this profile"
+        )
     for field, value in data.model_dump(exclude_unset=True).items():
         setattr(profile, field, value)
     await db.commit()
@@ -73,8 +81,12 @@ async def update_user_profile(
 async def delete_user_profile(
     profile_id: int, user_id: int, db: AsyncSession,
 ) -> None:
+    """Delete a user profile when the caller owns that profile."""
     profile = await get_user_profile(profile_id, db)
     if profile.userId != user_id:
-        raise HTTPException(status_code=403, detail="Not authorized to delete this profile")
+        raise HTTPException(
+            status_code=403,
+            detail="Not authorized to delete this profile"
+        )
     await db.delete(profile)
     await db.commit()

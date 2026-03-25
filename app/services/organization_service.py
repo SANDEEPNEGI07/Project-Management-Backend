@@ -9,6 +9,7 @@ from app.schemas.organizations import OrganizationCreate, OrganizationUpdate
 async def create_organization(
     data: OrganizationCreate, db: AsyncSession,
 ) -> OrganizationModel:
+    """Create and persist a new organization."""
     organization = OrganizationModel(**data.model_dump())
     db.add(organization)
     await db.commit()
@@ -19,6 +20,7 @@ async def create_organization(
 async def get_organization(
     org_id: int, db: AsyncSession,
 ) -> OrganizationModel:
+    """Return one organization by ID or raise 404 if missing."""
     result = await db.execute(
         select(OrganizationModel)
         .where(OrganizationModel.id == org_id)
@@ -30,6 +32,7 @@ async def get_organization(
 
 
 async def get_organizations(db: AsyncSession) -> list[OrganizationModel]:
+    """Return all organizations."""
     result = await db.execute(select(OrganizationModel))
     return list(result.scalars().all())
 
@@ -37,6 +40,7 @@ async def get_organizations(db: AsyncSession) -> list[OrganizationModel]:
 async def update_organization(
     org_id: int, data: OrganizationUpdate, db: AsyncSession,
 ) -> OrganizationModel:
+    """Apply partial updates to an organization and persist changes."""
     org = await get_organization(org_id, db)
     for field, value in data.model_dump(exclude_unset=True).items():
         setattr(org, field, value)
@@ -46,6 +50,7 @@ async def update_organization(
 
 
 async def delete_organization(org_id: int, db: AsyncSession) -> None:
+    """Delete an organization by ID."""
     org = await get_organization(org_id, db)
     await db.delete(org)
     await db.commit()

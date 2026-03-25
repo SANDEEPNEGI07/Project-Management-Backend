@@ -21,6 +21,7 @@ async def list_projects(
     db: AsyncSession = Depends(get_db),
     current_user: UserModel = Depends(get_current_user),
 ):
+    """Return all projects."""
     return await get_projects(db)
 
 
@@ -30,6 +31,7 @@ async def add_project(
     db: AsyncSession = Depends(get_db),
     current_user: UserModel = Depends(get_current_user),
 ):
+    """Create a new project."""
     return await create_project(data, db)
 
 
@@ -39,6 +41,7 @@ async def read_project(
     db: AsyncSession = Depends(get_db),
     current_user: UserModel = Depends(get_current_user),
 ):
+    """Fetch a project by ID."""
     return await get_project(project_id, db)
 
 
@@ -49,6 +52,7 @@ async def edit_project(
     db: AsyncSession = Depends(get_db),
     current_user: UserModel = Depends(get_current_user),
 ):
+    """Update a project by ID."""
     return await update_project(project_id, data, db)
 
 
@@ -58,4 +62,5 @@ async def remove_project(
     db: AsyncSession = Depends(get_db),
     current_user: UserModel = Depends(get_current_user),
 ):
+    """Delete a project by ID."""
     await delete_project(project_id, db)

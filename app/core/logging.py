@@ -3,6 +3,7 @@ import sys
 
 
 def setup_logging() -> None:
+    """Configure application logging format and output stream."""
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s | %(levelname)-8s | %(name)s | %(message)s",

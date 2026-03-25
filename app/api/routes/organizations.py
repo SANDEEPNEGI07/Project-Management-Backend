@@ -25,6 +25,7 @@ async def list_organizations(
     db: AsyncSession = Depends(get_db),
     current_user: UserModel = Depends(get_current_user),
 ):
+    """Return all organizations visible to authenticated users."""
     return await get_organizations(db)
 
 
@@ -34,6 +35,7 @@ async def add_organization(
     db: AsyncSession = Depends(get_db),
     current_user: UserModel = Depends(get_current_user),
 ):
+    """Create a new organization from the provided payload."""
     return await create_organization(data, db)
 
 
@@ -43,6 +45,7 @@ async def read_organization(
     db: AsyncSession = Depends(get_db),
     current_user: UserModel = Depends(get_current_user),
 ):
+    """Fetch a single organization by its id."""
     return await get_organization(org_id, db)
 
 
@@ -53,6 +56,7 @@ async def edit_organization(
     db: AsyncSession = Depends(get_db),
     current_user: UserModel = Depends(get_current_user),
 ):
+    """Update an existing organization with partial fields."""
     return await update_organization(org_id, data, db)
 
 
@@ -62,4 +66,5 @@ async def remove_organization(
     db: AsyncSession = Depends(get_db),
     current_user: UserModel = Depends(get_current_user),
 ):
+    """Delete an organization by ID."""
     await delete_organization(org_id, db)

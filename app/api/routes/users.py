@@ -12,6 +12,7 @@ router = APIRouter(tags=["Users"])
 
 @router.get("/me", response_model=UserResponse)
 async def read_me(current_user: UserModel = Depends(get_current_user)):
+    """Return the currently authenticated user."""
     return current_user
 
 
@@ -20,6 +21,7 @@ async def list_users(
     db: AsyncSession = Depends(get_db),
     current_user: UserModel = Depends(get_current_user),
 ):
+    """Return all users."""
     return await get_users(db)
 
 
@@ -29,6 +31,7 @@ async def read_user(
     db: AsyncSession = Depends(get_db),
     current_user: UserModel = Depends(get_current_user),
 ):
+    """Fetch a single user by ID."""
     return await get_user(user_id, db)
 
 
@@ -39,6 +42,7 @@ async def edit_user(
     db: AsyncSession = Depends(get_db),
     current_user: UserModel = Depends(get_current_user),
 ):
+    """Update a user by ID."""
     return await update_user(user_id, data, db)
 
 
@@ -48,4 +52,5 @@ async def remove_user(
     db: AsyncSession = Depends(get_db),
     current_user: UserModel = Depends(get_current_user),
 ):
+    """Delete a user by ID."""
     await delete_user(user_id, db)

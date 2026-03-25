@@ -14,5 +14,6 @@ AsyncSessionLocal = async_sessionmaker(
 
 
 async def get_db() -> AsyncGenerator[AsyncSession, None]:
+    """Yield an async database session for request-scoped use."""
     async with AsyncSessionLocal() as session:
         yield session

@@ -16,7 +16,12 @@ router = APIRouter(tags=["Auth"])
 
 
 @router.post("/register", response_model=UserResponse)
-async def register(user_data: UserCreate, response: Response, db: AsyncSession = Depends(get_db)):
+async def register(
+    user_data: UserCreate,
+    response: Response,
+    db: AsyncSession = Depends(get_db)
+):
+    """Register a new user or return the existing user."""
     existing = await db.execute(
         select(UserModel).where(UserModel.email == user_data.email)
     )
@@ -34,6 +39,7 @@ async def login(
     response: Response,
     db: AsyncSession = Depends(get_db),
 ):
+    """Authenticate a user and set an access token cookie."""
     user = await authenticate_user(user_data.email, user_data.password, db)
     token = generate_token_for_user(user)
     response.set_cookie(
@@ -49,5 +55,6 @@ async def login(
 
 @router.post("/logout")
 async def logout(response: Response):
+    """Clear the access token cookie for the current client."""
     response.delete_cookie(key="access_token")
     return {"message": "Logged out"}
